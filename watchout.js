@@ -67,6 +67,11 @@ Game.prototype.movePlayer = function() {
 
 Game.prototype.detectCollision = function() {
 
+  // Attach the tween to the enemies
+  // Create factory function that returns the distance detection function
+  // Create function for calculating distance between enemy and player
+  // When there's a collision, call update score
+
 }
 
 Game.prototype.moveEnemies = function() {
@@ -85,6 +90,23 @@ Game.prototype.moveEnemies = function() {
     return randomPos;
   }
 
+  var collisionFound = function(player, enemy) {
+    console.log("collision!");
+  }
+
+  var checkCollision = function(enemy, callback) {
+    var player = d3.select('.player');
+    var radiusSum =  parseFloat(enemy.attr('r')) + player.attr('r');
+    var xDiff = parseFloat(enemy.attr('cx')) - player.attr('cx');
+    var yDiff = parseFloat(enemy.attr('cy')) - player.attr('cy');
+    var separation = Math.sqrt( Math.pow(xDiff,2) + Math.pow(yDiff,2));
+    if(separation < radiusSum) {
+
+      callback(player, enemy);
+    }
+
+  }
+
   for(var i=0; i<this.nEnemies; i++) {
     enemiesData.push(i);
   }
@@ -92,19 +114,43 @@ Game.prototype.moveEnemies = function() {
   var enemies = this.board.selectAll("circle")
     .data(enemiesData);
 
+
+  var enemyTween = function(a) {
+    var enemy = d3.select(this);
+    var xStart = parseFloat(enemy.attr('cx'));
+    var yStart = parseFloat(enemy.attr('cy'));
+    var xEnd = randPositionX(enemy);
+    var yEnd = randPositionY(enemy);
+
+    return function(t) {
+
+      checkCollision(enemy, collisionFound);
+      var x = xStart + (xEnd - xStart) *t;
+      var y = yStart + (yEnd - yStart) *t;
+
+      enemy.attr('cx', x)
+        .attr('cy', y);
+    }
+
+
+    //Select current enemy
+    //Store current coordinates
+    //Store the desired coordinates to move to
+    //  return function(time)
+    //    function will call collisionDetection function
+    //    and move object
+    //
+
+  }
     enemies.transition()
       .duration(1000)
-      .attr("cx", randPositionX)
-      .attr("cy", randPositionY);
+      .tween("custom", enemyTween)
     enemies.enter()
       .append("circle")
       .attr("r","10")
       .attr("fill","green")
       .attr("cx", randPositionX)
       .attr("cy", randPositionY);
-
-
-
 
 }
 
