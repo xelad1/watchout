@@ -82,15 +82,6 @@ Game.prototype.movePlayer = function() {
 
 }
 
-Game.prototype.detectCollision = function() {
-
-  // Attach the tween to the enemies
-  // Create factory function that returns the distance detection function
-  // Create function for calculating distance between enemy and player
-  // When there's a collision, call update score
-
-}
-
 Game.prototype.moveEnemies = function() {
 
   var height = this.height - 2 * this.padding;
@@ -106,6 +97,8 @@ Game.prototype.moveEnemies = function() {
     var randomPos = Math.floor(Math.random() * height) + padding;
     return randomPos;
   }
+
+
 
   var collisionFound = function(player, enemy) {
 
@@ -123,6 +116,8 @@ Game.prototype.moveEnemies = function() {
 
   }
 
+  var prevEnemy;
+
   var checkCollision = function(enemy, callback) {
     var player = d3.select('.player');
     var radiusSum =  10;
@@ -130,9 +125,12 @@ Game.prototype.moveEnemies = function() {
     var yDiff = parseFloat(enemy.attr('cy')) - player.attr('cy');
     var separation = Math.sqrt( Math.pow(xDiff,2) + Math.pow(yDiff,2));
     if(separation < radiusSum) {
-
-      callback(player, enemy);
+      if(prevEnemy !== enemy) {
+        prevEnemy = enemy;
+        callback(player, enemy);
+      }
     }
+
 
   }
 
