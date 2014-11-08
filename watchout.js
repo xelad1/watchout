@@ -12,6 +12,10 @@
   // Set the display properties of the board
   // Initialize the SVG element that will represent the board in the dom
 
+var score = 0;
+var highScore = 0;
+var collisions = 0;
+
 var Game = function() {
   this.height = 450;
   this.width  = 700;
@@ -28,9 +32,22 @@ Game.prototype.initialize = function() {
       .attr("height", this.height)
       .attr("padding", this.padding);
 
+  var scoreBoard = d3.select("body").append("div")
+      .attr("class", "scoreboard");
+
+  var paragraphs = scoreBoard.selectAll("p")
+      .data([{text: "High Score: ", value: this.score, cls: "highScore"},{text: "Current Score: ", value: this.score, cls: "currentScore"},{text: "Collisions: ", value: this.score, cls: "collisions"}]);
+  paragraphs.enter()
+      .append("p")
+      .attr("class",function(d) { return d.cls })
+      .text(function(d) { return d.text + d.value; });
+
+
   this.board = board;
   this.moveEnemies(board);
   this.movePlayer(board);
+
+  setInterval(function(){ return score++; },50);
 
 }
 
@@ -91,12 +108,24 @@ Game.prototype.moveEnemies = function() {
   }
 
   var collisionFound = function(player, enemy) {
-    console.log("collision!");
+
+    var paragraphs = d3.select(".scoreBoard").selectAll("p")
+      .data([{text: "High Score: ", value: 0},{text: "Current Score: ", value: 0},{text: "Collisions: ", value: 0}])
+      .append("p")
+      .text(function(d) { return d.text + d.value; });
+
+    if(score >= highScore) {
+      highScore = score;
+    }
+
+    score = 0;
+    collisions++;
+
   }
 
   var checkCollision = function(enemy, callback) {
     var player = d3.select('.player');
-    var radiusSum =  parseFloat(enemy.attr('r')) + player.attr('r');
+    var radiusSum =  10;
     var xDiff = parseFloat(enemy.attr('cx')) - player.attr('cx');
     var yDiff = parseFloat(enemy.attr('cy')) - player.attr('cy');
     var separation = Math.sqrt( Math.pow(xDiff,2) + Math.pow(yDiff,2));
@@ -121,8 +150,22 @@ Game.prototype.moveEnemies = function() {
     var yStart = parseFloat(enemy.attr('cy'));
     var xEnd = randPositionX(enemy);
     var yEnd = randPositionY(enemy);
+    var currentScore = d3.select(".currentScore");
+    var highScoreSelector = d3.select(".highScore");
+    var collisionsSelector = d3.select(".collisions");
+
 
     return function(t) {
+
+      currentScore.data([{text: "Current Score: ", value: score }])
+        .text(function(d) { return d.text + d.value; });;
+
+      highScoreSelector.data([{text: "High Score: ", value: highScore }])
+        .text(function(d) { return d.text + d.value; });;
+
+      collisionsSelector.data([{text: "Collisions: ", value: collisions }])
+        .text(function(d) { return d.text + d.value; });;
+
 
       checkCollision(enemy, collisionFound);
       var x = xStart + (xEnd - xStart) *t;
