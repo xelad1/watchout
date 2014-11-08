@@ -30,10 +30,48 @@ Game.prototype.initialize = function() {
 
   this.board = board;
   this.moveEnemies(board);
+  this.movePlayer(board);
 
 }
 
 Game.prototype.movePlayer = function() {
+
+  // Copy our circle code to make the player
+  // Add a player class
+  // Position player at 1/2 height and width
+  // Figure out mouseDown event handler
+    // Register a click
+    // Determine the start position
+    // Create function to check for legal versions of coordinates
+  // Figure out mouseRelease event handler
+
+  var radius = 10;
+  var width = this.width;
+  var height = this.height;
+
+  var player = this.board.selectAll("circle").select(".player")
+    .data([{x: width / 2, y: height / 2}]);
+
+  var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("drag", dragmove);
+
+  var dragmove = function (d) {
+    d3.select(this)
+      .attr("cx", d.x = Math.max(radius, Math.min(width - radius, d3.event.x)))
+      .attr("cy", d.y = Math.max(radius, Math.min(height - radius, d3.event.y)));
+  }
+
+  player.transition()
+     .call(drag);
+
+  player.enter()
+    .append("circle")
+    .attr("class","player")
+    .attr("r",radius)
+    .attr("fill","red")
+    .attr("cx",function(d) { return d.x; })
+    .attr("cy",function(d) { return d.y; });
 
 }
 
@@ -41,7 +79,7 @@ Game.prototype.detectCollision = function() {
 
 }
 
-Game.prototype.moveEnemies = function(board) {
+Game.prototype.moveEnemies = function() {
 
   var height = this.height - 2 * this.padding;
   var width = this.width - 2 * this.padding;
