@@ -36,15 +36,6 @@ Game.prototype.initialize = function() {
 
 Game.prototype.movePlayer = function() {
 
-  // Copy our circle code to make the player
-  // Add a player class
-  // Position player at 1/2 height and width
-  // Figure out mouseDown event handler
-    // Register a click
-    // Determine the start position
-    // Create function to check for legal versions of coordinates
-  // Figure out mouseRelease event handler
-
   var radius = 10;
   var width = this.width;
   var height = this.height;
@@ -52,18 +43,16 @@ Game.prototype.movePlayer = function() {
   var player = this.board.selectAll("circle").select(".player")
     .data([{x: width / 2, y: height / 2}]);
 
-  var drag = d3.behavior.drag()
-      .origin(function(d) { return d; })
-      .on("drag", dragmove);
-
   var dragmove = function (d) {
     d3.select(this)
       .attr("cx", d.x = Math.max(radius, Math.min(width - radius, d3.event.x)))
       .attr("cy", d.y = Math.max(radius, Math.min(height - radius, d3.event.y)));
   }
 
-  player.transition()
-     .call(drag);
+  var drag = d3.behavior.drag()
+      .on("drag", dragmove);
+
+  // player.call(drag);
 
   player.enter()
     .append("circle")
@@ -71,7 +60,8 @@ Game.prototype.movePlayer = function() {
     .attr("r",radius)
     .attr("fill","red")
     .attr("cx",function(d) { return d.x; })
-    .attr("cy",function(d) { return d.y; });
+    .attr("cy",function(d) { return d.y; })
+    .call(drag);
 
 }
 
