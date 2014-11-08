@@ -28,6 +28,7 @@ Game.prototype.initialize = function() {
       .attr("height", this.height)
       .attr("padding", this.padding);
 
+  this.board = board;
   this.moveEnemies(board);
 
 }
@@ -42,22 +43,40 @@ Game.prototype.detectCollision = function() {
 
 Game.prototype.moveEnemies = function(board) {
 
+  var height = this.height - 2 * this.padding;
+  var width = this.width - 2 * this.padding;
+  var padding = this.padding;
   var enemiesData = [];
+  var randPositionX = function(d) {
+    var randomPos = Math.floor(Math.random() * width) + padding;
+    return randomPos;
+  }
+
+  var randPositionY = function(d) {
+    var randomPos = Math.floor(Math.random() * height) + padding;
+    return randomPos;
+  }
 
   for(var i=0; i<this.nEnemies; i++) {
     enemiesData.push(i);
   }
 
-  var enemies = board.selectAll("circle")
-    .data(enemiesData)
-    .enter()
-      .append("circle")
-      .attr("cx","15")
-      .attr("cy","15")
-      .attr("r","15")
-      .attr("fill","green");
+  var enemies = this.board.selectAll("circle")
+    .data(enemiesData);
 
-  debugger;
+    enemies.transition()
+      .duration(1000)
+      .attr("cx", randPositionX)
+      .attr("cy", randPositionY);
+    enemies.enter()
+      .append("circle")
+      .attr("r","10")
+      .attr("fill","green")
+      .attr("cx", randPositionX)
+      .attr("cy", randPositionY);
+
+
+
 
 }
 
@@ -67,4 +86,6 @@ Game.prototype.adjustScore = function() {
 
 var game = new Game();
 game.initialize();
+
+window.setInterval(game.moveEnemies.bind(game), 1000);
 
