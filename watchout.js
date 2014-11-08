@@ -27,13 +27,26 @@ var Game = function() {
 
 Game.prototype.initialize = function() {
 
-  var board = d3.select("body").append("svg")
+  var board = d3.select("body")
+    .append("svg")
       .attr("width", this.width)
       .attr("height", this.height)
       .attr("padding", this.padding);
 
+  board.append("defs")
+    .append("pattern")
+      .attr("width",20)
+      .attr("height",20)
+      .attr("id","shuriken")
+    .append("image")
+      .attr("xlink:href","pattern.jpg")
+      .attr("width","1680")
+      .attr("height","1050");
+
+
   var scoreBoard = d3.select("body").append("div")
       .attr("class", "scoreboard");
+
 
   var paragraphs = scoreBoard.selectAll("p")
       .data([{text: "High Score: ", value: this.score, cls: "highScore"},{text: "Current Score: ", value: this.score, cls: "currentScore"},{text: "Collisions: ", value: this.score, cls: "collisions"}]);
@@ -191,9 +204,10 @@ Game.prototype.moveEnemies = function() {
     enemies.enter()
       .append("circle")
       .attr("r","10")
-      .attr("fill","green")
+      .attr("fill","url(#shuriken)")
       .attr("cx", randPositionX)
-      .attr("cy", randPositionY);
+      .attr("cy", randPositionY)
+      .attr("class","enemy");
 
 }
 
